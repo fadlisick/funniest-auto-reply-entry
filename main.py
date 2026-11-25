@@ -25,6 +25,16 @@ def check_reply(text):
     return True
 
 
+def verify(target, expected):
+    """Re-read the written file and confirm it is byte-for-byte the reply."""
+    with open(target, "rb") as handle:
+        written = handle.read()
+    if written != expected.encode("utf-8"):
+        raise SystemExit("entry.txt does not match the reply byte-for-byte")
+    if len(written) != len(expected):
+        raise SystemExit("entry.txt byte length mismatch")
+
+
 def main():
     if not check_reply(AUTO_REPLY):
         raise SystemExit("reply fails the 1-159 char single-line gate")
@@ -34,6 +44,7 @@ def main():
     with open(target, "w", encoding="utf-8", newline="") as handle:
         handle.write(AUTO_REPLY)
     os.chmod(target, 0o644)
+    verify(target, AUTO_REPLY)
 
 
 if __name__ == "__main__":
